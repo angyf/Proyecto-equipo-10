@@ -1,0 +1,22 @@
+library(dplyr)
+library(tidyr)
+
+setwd("/Users/...")
+
+
+test <- read.csv("test.csv")
+train <- read.csv("train.csv")
+dim(test) # 16 columnas
+dim(train) #17 columnas
+str(test)
+str(train)
+summary(test)
+summary(train)
+
+head(train) 
+
+train1 <- train %>%  #Train1 es la base con los pacientes con el defecto cardiaco
+  filter(TenYearCHD==1) # con filter tenemos una base con los pacientes que padecen el defecto cardiaco
+
+train1
+dim(train1)
