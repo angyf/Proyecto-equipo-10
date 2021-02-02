@@ -1,6 +1,10 @@
+install.packages("ggplot2")
+
+# -----------------------------------------------------------------------------------------
+
+
 suppressMessages(suppressWarnings(library(dplyr)))
 
-install.packages("ggplot2")
 
 library(ggplot2)
 
@@ -38,6 +42,21 @@ men_fumadores_diabeticos <- filter( cardioData, is_smoking == 'YES' & sex == 'M'
 fumadores_no_diabeticos <- filter( cardioData, is_smoking == 'YES' & diabetes == 0 ) # 29 Observaciones
 women_fumadores_no_diabeticos <- filter( cardioData, is_smoking == 'YES' & sex == 'F' ) # 16 Observaciones
 men_fumadores_no_diabeticos <- filter( cardioData, is_smoking == 'YES' & sex == 'M' ) # 13 Observaciones
+
+# Fumadores con diabetes, hipertensos, tomando medicamento para presion sanguinea alta y alto colasterol
+personas_mala_condicion <- filter( cardioData, is_smoking == 'YES' & diabetes == 1 & BPMeds == 1 & totChol >= 130 & prevalentHyp == 1) 
+
+
+# Nivel de colesterol total	Categoría
+# Entre 100 y 129 mg/dL	Casi óptimo o por encima del valor óptimo
+# Entre 130 y 159 mg/dL	Límite superior del rango normal
+# Entre 160 y 189 mg/dL	Alto
+# 190 mg/dL o más	Muy alto
+
+personas_con_colasterol_aceptable <- filter( cardioData, totChol >= 100 & totChol <= 129)    
+personas_con_colasterol_limite_superior <- filter( cardioData, totChol >= 130 & totChol <= 159)    
+personas_con_colasterol_alto <- filter( cardioData, totChol >= 160 & totChol <= 189)    
+personas_con_colasterol_muy_alto <- filter( cardioData, totChol >= 190 )    
 
 
 # Por rangos de edades en 10
@@ -152,7 +171,7 @@ cardio <- rename(cardioData,
                  genero = sex,
                  fumador = is_smoking,
                  cigarrosAlDia = cigsPerDay,
-                 BPMeds = BPMeds,
+                 BPMeds = BPMeds,# Blood Pressure Meds
                  accidenteCerebrovascularPrevalente = prevalentStroke,
                  hipertenionPrevalente = prevalentHyp,
                  diabetes = diabetes,
