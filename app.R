@@ -122,3 +122,6 @@ server <- function(input, output) {
 
 
 shinyApp(ui, server)
+
+#link
+#https://angelicafuentes.shinyapps.io/Proyecto_prueba/
