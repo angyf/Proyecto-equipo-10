@@ -273,7 +273,7 @@ ggplot(train1,aes(x=factor(diabetes)))+
 #0 Hombre, 1 mujer
 train<-mutate(train,sex=as.character(train$sex))
 for (i  in 1:length(train$sex)) {
-  if (train$sex[i]=="MUJER") {train$sex[i]=1}
+  if (train$sex[i]=="F") {train$sex[i]=1}
   else {train$sex[i]=0}
 }
 
