@@ -357,12 +357,8 @@ errores0<-filter(train,TenYearCHD==0,prediccion==1)
 dim(errores0)[1]
 
 
-#Maquina de vectores----
-library(e1071)#para maquina de vectores
-library(dplyr)
-
 train<-read.csv("train.csv")
-pruebas<-read.csv("test.csv")
+test<-read.csv("test.csv")
 #Limpieza de datos
 #completamos las variables categoricas con la moda
 Mode(na.omit(train$BPMeds)) #la moda es 0
@@ -383,6 +379,7 @@ train<-mutate(train,BMI=as.numeric(impute(as.data.frame(train$BMI),what="median"
 train<-mutate(train,heartRate=as.numeric(impute(as.data.frame(train$heartRate),what="median")))
 train<-mutate(train,glucose=as.numeric(impute(as.data.frame(train$glucose),what="median")))
 
+#limpieza datos para test-----
 Mode(na.omit(test$BPMeds)) #la moda es 0
 test$BPMeds<-ifelse(is.na(test$BPMeds),0,test$BPMeds)
 
@@ -422,6 +419,7 @@ for (i  in 1:length(test$sex)) {
   else {test$sex[i]=0}
 }
 
+
 datos.mv<-select(train,age,sex,cigsPerDay:TenYearCHD)
 #convertimos a factor la variable dependiente
 datos.mv$TenYearCHD<-factor(datos.mv$TenYearCHD, levels = c("0", "1")) 
@@ -430,9 +428,9 @@ str(datos.mv)
 #separamos los datos para entrenamiento y prueba
 #ind<-sample(2,nrow(datos.mv),replace=TRUE,prob=c(0.7,.3))
 #3390*.75 =2542.5
-set.seed(1998)
+set.seed(2020)
 p = sample(nrow(datos.mv), 
-           round(nrow(datos.mv)/2))
+           round(nrow(datos.mv)*.75))
 entrenamiento<-datos.mv[p,]
 prueba<-datos.mv[-p,]
 
@@ -440,12 +438,14 @@ prueba<-datos.mv[-p,]
 table(entrenamiento$TenYearCHD)
 prop.table(table(entrenamiento$TenYearCHD)) %>% round(digits = 2)
 
-entrenamiento$TenYearCHD<-factor(entrenamiento$TenYearCHD) 
-test<-mutate(test,sex=as.numeric(test$sex))
-
+#maquina 1------
 # Optimización de hiperparámetros mediante validación cruzada 10-fold
+tuning <- tune(svm, TenYearCHD ~ ., data = entrenamiento,
+               kernel="radial",
+               #ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 15, 20)
+               )
 
-tuning <- tune(svm, TenYearCHD ~ ., data = entrenamiento)
+
 
 summary(tuning)
 # Almacenamos el modelo optimo obtenido y accedemos a su información
@@ -454,106 +454,179 @@ summary(modelo)
 
 
 #El mejor modelo obtenido sería equivalente a ajustar:
-modelo<- svm(TenYearCHD ~ ., data = entrenamiento, 
-             kernel = "radial", 
-             cost = 1) 
+ modelo<- svm(TenYearCHD ~ ., data = entrenamiento, 
+                    kernel = "radial", 
+                    cost = 1)
 
-# Error de test
-predicciones = predict(modelo, prueba)
-table(prediccion = predicciones, real = prueba$TenYearCHD)
+ #predicciones con base de entrenamiento
+ predicciones = predict(modelo, entrenamiento)
+ table(prediccion = predicciones, real = entrenamiento$TenYearCHD)
 
-paste("Observaciones de test mal clasificadas:", 
-      100 * mean(prueba$TenYearCHD != predict(modelo, prueba)) %>%
-        round(digits = 4), "%")
+ paste("Observaciones de test mal clasificadas:", 
+       100 * mean(entrenamiento$TenYearCHD != predict(modelo,entrenamiento)) %>%
+         round(digits = 4), "%")
+ 
+ # Error con base de prueba
+ predicciones = predict(modelo, prueba)
+ table(prediccion = predicciones, real = prueba$TenYearCHD)
+ 
+ paste("Observaciones de test mal clasificadas:", 
+       100 * mean(prueba$TenYearCHD != predict(modelo, prueba)) %>%
+         round(digits = 4), "%")
+ 
+ #prediccion de datos 
+ predicciones = predict(modelo, test)
+ a<-as.data.frame(predicciones)
+ a$predicciones<-as.numeric(as.character(a$predicciones))
+ sum(a)
 
-predicciones = predict(modelo, entrenamiento)
-table(prediccion = predicciones, real = entrenamiento$TenYearCHD)
-
-paste("Observaciones de test mal clasificadas:", 
-      100 * mean(entrenamiento$TenYearCHD != predict(modelo, entrenamiento)) %>%
-        round(digits = 4), "%")
-
-
+  
+ 
 #segundo intento con las variables del modelo logistico------
 #age + sex + cigsPerDay + prevalentStroke + totChol + sysBP + glucose
-
-datos.mv<-select(train,age,sex,cigsPerDay,prevalentStroke,totChol,sysBP,glucose,TenYearCHD)
-#convertimos a factor la variable dependiente
-datos.mv$TenYearCHD<-factor(datos.mv$TenYearCHD, levels = c("0", "1")) 
-str(datos.mv)
-
-#separamos los datos para entrenamiento y prueba
-#ind<-sample(2,nrow(datos.mv),replace=TRUE,prob=c(0.7,.3))
-#3390*.75 =2542.5
-set.seed(1998)
-p = sample(nrow(datos.mv), 
-           round(nrow(datos.mv)/2))
-entrenamiento<-datos.mv[p,]
-prueba<-datos.mv[-p,]
-
+#cargamos de nuevo los datos para tenerlos limpios
+ 
+ train<-read.csv("train.csv")
+ test<-read.csv("test.csv")
+ #Limpieza de datos
+ #completamos las variables categoricas con la moda
+ Mode(na.omit(train$BPMeds)) #la moda es 0
+ train$BPMeds<-ifelse(is.na(train$BPMeds),0,train$BPMeds)
+ Mode(na.omit(train$prevalentStroke)) #la moda es 0
+ train$prevalentStroke<-ifelse(is.na(train$prevalentStroke),0,train$prevalentStroke)
+ Mode(na.omit(train$prevalentHyp)) #la moda es 0
+ train$prevalentHyp<-ifelse(is.na(train$prevalentHyp),0,train$prevalentHyp)
+ Mode(na.omit(train$diabetes)) #la moda es 0
+ train$diabetes<-ifelse(is.na(train$diabetes),0,train$diabetes)
+ 
+ #Cambiamos NA con la mediana de los datos, para un mejor manejo
+ train<-mutate(train,cigsPerDay=as.numeric(impute(as.data.frame(train$cigsPerDay),what="median")))
+ train<-mutate(train,totChol=as.numeric(impute(as.data.frame(train$totChol),what="median")))
+ train<-mutate(train,sysBP=as.numeric(impute(as.data.frame(train$sysBP),what="median")))
+ train<-mutate(train,diaBP=as.numeric(impute(as.data.frame(train$diaBP),what="median")))
+ train<-mutate(train,BMI=as.numeric(impute(as.data.frame(train$BMI),what="median")))
+ train<-mutate(train,heartRate=as.numeric(impute(as.data.frame(train$heartRate),what="median")))
+ train<-mutate(train,glucose=as.numeric(impute(as.data.frame(train$glucose),what="median")))
+ 
+ Mode(na.omit(test$BPMeds)) #la moda es 0
+ test$BPMeds<-ifelse(is.na(test$BPMeds),0,test$BPMeds)
+ 
+ Mode(na.omit(test$education)) #la moda es 0
+ test$education<-ifelse(is.na(test$education),0,test$education)
+ 
+ Mode(na.omit(test$prevalentStroke)) #la moda es 0
+ test$prevalentStroke<-ifelse(is.na(test$prevalentStroke),0,test$prevalentStroke)
+ 
+ Mode(na.omit(test$prevalentHyp)) #la moda es 0
+ test$prevalentHyp<-ifelse(is.na(test$prevalentHyp),0,test$prevalentHyp)
+ 
+ Mode(na.omit(test$diabetes)) #la moda es 0
+ test$diabetes<-ifelse(is.na(test$diabetes),0,test$diabetes)
+ 
+ #Cambiamos NA con la mediana de los datos, para un mejor manejo
+ test<-mutate(test,cigsPerDay=as.numeric(impute(as.data.frame(test$cigsPerDay),what="median")))
+ test<-mutate(test,totChol=as.numeric(impute(as.data.frame(test$totChol),what="median")))
+ test<-mutate(test,sysBP=as.numeric(impute(as.data.frame(test$sysBP),what="median")))
+ test<-mutate(test,diaBP=as.numeric(impute(as.data.frame(test$diaBP),what="median")))
+ test<-mutate(test,BMI=as.numeric(impute(as.data.frame(test$BMI),what="median")))
+ test<-mutate(test,heartRate=as.numeric(impute(as.data.frame(test$heartRate),what="median")))
+ test<-mutate(test,glucose=as.numeric(impute(as.data.frame(test$glucose),what="median")))
+ 
+ 
+ #hombres y mujeres con riesgo TRAIN
+ mujeres.r<-filter(train,TenYearCHD==1,sex=="F")#239
+ hombres.r<-filter(train,TenYearCHD==1,sex=="M")#272 EN TOTAL15%
+ 
+ #Conversion de datos para modelos -----
+ #convertimos la variable categorica a numerica
+ #0 Hombre, 1 mujer
+ train<-mutate(train,sex=as.character(train$sex))
+ for (i  in 1:length(train$sex)) {
+   if (train$sex[i]=="F") {train$sex[i]=1}
+   else {train$sex[i]=0}
+ }
+ 
+ test<-mutate(test,sex=as.character(test$sex))
+ for (i  in 1:length(test$sex)) {
+   if (test$sex[i]=="F") {test$sex[i]=1}
+   else {test$sex[i]=0}
+ }
+ 
+ datos.mv<-select(train,age,sex,cigsPerDay,prevalentStroke,totChol,sysBP,glucose,TenYearCHD)
+ #convertimos a factor la variable dependiente
+ datos.mv$TenYearCHD<-factor(datos.mv$TenYearCHD, levels = c("0", "1")) 
+ str(datos.mv)
+ 
+ #separamos los datos para entrenamiento y prueba
+ set.seed(2020)
+ p = sample(nrow(datos.mv), 
+                round(nrow(datos.mv)*.75))
+ entrenamiento<-datos.mv[p,]
+ prueba<-datos.mv[-p,]
+ 
 #frecuencias de la variable respuesta
-table(entrenamiento$TenYearCHD)
-prop.table(table(entrenamiento$TenYearCHD)) %>% round(digits = 2)
-
-
+ table(entrenamiento$TenYearCHD)
+ prop.table(table(entrenamiento$TenYearCHD)) %>% round(digits = 2)
+ 
+ 
+ #maquina 2------------ 
 # Optimización de hiperparámetros mediante validación cruzada 10-fold
-
-tuning <- tune(svm, TenYearCHD ~ ., data = entrenamiento)
-
-summary(tuning)
-# Almacenamos el modelo optimo obtenido y accedemos a su información
-modelo <- tuning$best.model
-summary(modelo)
-
-
-#El mejor modelo obtenido sería equivalente a ajustar:
-modelo<- svm(TenYearCHD ~ ., data = entrenamiento, 
-             cost = 1)
-
-# Error de test
-predicciones = predict(modelo, prueba)
-table(prediccion = predicciones, real = prueba$TenYearCHD)
-
-paste("Observaciones de test mal clasificadas:", 
-      100 * mean(prueba$TenYearCHD != predict(modelo, prueba)) %>%
-        round(digits = 4), "%")
-
-#Prueba con datos de entrenamiento 
-predicciones = predict(modelo, entrenamiento)
-table(prediccion = predicciones, real = entrenamiento$TenYearCHD)
-
-paste("Observaciones de test mal clasificadas:", 
-      100 * mean(entrenamiento$TenYearCHD != predict(modelo, entrenamiento)) %>%
-        round(digits = 4), "%")
-
-
-
-#con el archivo test<-pruebas
-test1<-select(test,age, sex,cigsPerDay,prevalentStroke,
-              totChol, sysBP, glucose)
-pre<-predict(modelo, pruebas)
-#total de personas con riesgo 
-sum(as.numeric(as.character(pre))) #41
-#porcentaje con riesgo 1.20
-100*sum(as.numeric(as.character(pre)))/nrow(pruebas)
-
-#porcentaje con riesgo en train
-100*sum(train$TenYearCHD)/nrow(train)
-
-test$TenYearCHD<-as.numeric(as.character(pre))
-
-
-#GRAFICOS PREDICCION
-colores<-c("pink","red","aquamarine","blue")
-levels(test$sex) <- c("Mujer", "Hombre")
-ggplot(test,aes(x=factor(TenYearCHD)))+
-  geom_bar(color = "black", fill =colores)+
-  facet_wrap(test$sex)+
-  labs(x="",y="Total",
-       title="Personas con riesgo de enfermedad en 10 años")+
-  facet_grid(.~sex)+
-  scale_x_discrete(labels = c('Sin riesgo','Con riesgo'))+
-  theme_minimal()+
-  theme(plot.title = element_text(hjust = 0.5))
-
-
+  tuning <- tune(svm, TenYearCHD ~ ., data = entrenamiento, 
+                kernel = "radial", 
+                ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 15, 20)
+                             # gamma = seq(0.01, 10, 0.5)) 
+                ))
+ #El proceso de cross-validation muestra que el valor de penalización con el que se consigue menor 
+ #error rate es 20 o superior.
+ summary(tuning)
+ # Almacenamos el modelo optimo obtenido y accedemos a su información
+ modelo <- tuning$best.model
+ summary(modelo)
+ 
+ 
+ #El mejor modelo obtenido sería equivalente a ajustar:
+ modelo<- svm(TenYearCHD ~ ., data = entrenamiento, 
+              kernel = "radial", 
+              cost = 5)
+              #gamma=.125
+              
+ #predicciones con datos de entrenamiento
+ predicciones = predict(modelo, entrenamiento)
+ table(prediccion = predicciones, real = entrenamiento$TenYearCHD)
+ paste("Observaciones de test mal clasificadas:", 
+       100 * mean(entrenamiento$TenYearCHD != predict(modelo, entrenamiento)) %>%
+         round(digits = 5), "%")
+ 
+ # Error de test
+ predicciones = predict(modelo, prueba)
+ table(prediccion = predicciones, real = prueba$TenYearCHD)
+ 
+ 
+ paste("Observaciones de test mal clasificadas:", 
+       100 * mean(prueba$TenYearCHD != predict(modelo, prueba)) %>%
+         round(digits = 4), "%")
+ 
+#prediccion de datos 
+ predicciones = predict(modelo, test)
+ a<-as.data.frame(predicciones)
+ a$predicciones<-as.numeric(as.character(a$predicciones))
+ sum(a)
+ test$TenYearCHD<-a$predicciones
+#GRAFICOS DE PREDICCION ----- 
+ colores<-c("pink","red","aquamarine","blue")
+ levels(test$sex) <- c("Mujer", "Hombre")
+ ggplot(test,aes(x=factor(TenYearCHD)))+
+    geom_bar(color = "black", fill =colores)+
+    facet_wrap(test$sex)+
+    labs(x="",y="Total",
+         title="Personas con riesgo de enfermedad en 10 años")+
+    facet_grid(.~sex)+
+    scale_x_discrete(labels = c('Sin riesgo','Con riesgo'))+
+    theme_minimal()+
+    theme(plot.title = element_text(hjust = 0.5))
+ 
+ #hombres y mujeres con riesgo  predicciones
+ mujeres.riesgo<-filter(test,TenYearCHD==1,sex=="1")#1
+ hombres.riesgo<-filter(test,TenYearCHD==1,sex=="0")#10
+ 
+ 
