@@ -35,7 +35,7 @@ summary(train)
 #Diferencias entre poblaciones respecto a niveles de BMI
 
 t.test(train$BMI~train$sex)#sig < PACIENTES DE REF, DIF EN Índice de masa corporal RESPECTO AL SEXO
-t.test(train1$IBM~train1$sex)# PACIENTES DE REF CON DC, DIF EN Índice de masa corporal RESPECTO AL SEXO
+t.test(train1$BMI~train1$sex)# PACIENTES DE REF CON DC, DIF EN Índice de masa corporal RESPECTO AL SEXO
 t.test(train2$BMI~train2$sex)#sig < PACIENTES DE REF SIN DC, DIF EN Índice de masa corporal RESPECTO AL SEXO
 t.test(test$BMI~test$sex)# PACIENTES DE PRUEBA, DIF EN Índice de masa corporal RESPECTO AL SEXO
 
