@@ -53,11 +53,22 @@ personas_mala_condicion <- filter( cardioData, is_smoking == 'YES' & diabetes ==
 # Entre 160 y 189 mg/dL	Alto
 # 190 mg/dL o más	Muy alto
 
-personas_con_colasterol_aceptable <- filter( cardioData, totChol >= 100 & totChol <= 129)    
-personas_con_colasterol_limite_superior <- filter( cardioData, totChol >= 130 & totChol <= 159)    
-personas_con_colasterol_alto <- filter( cardioData, totChol >= 160 & totChol <= 189)    
-personas_con_colasterol_muy_alto <- filter( cardioData, totChol >= 190 )    
+personas_con_colasterol_aceptable <- filter( cardioData, totChol >= 100 & totChol <= 129)    # 6 Observaciones
+personas_con_colasterol_limite_superior <- filter( cardioData, totChol >= 130 & totChol <= 159)    # 67
+personas_con_colasterol_alto <- filter( cardioData, totChol >= 160 & totChol <= 189)    # 369 Observaciones
+personas_con_colasterol_muy_alto <- filter( cardioData, totChol >= 190 )    # 2910
 
+
+m_personas_con_colasterol_aceptable <- filter( cardioData, totChol >= 100 & totChol <= 129 & sex == 'M' )    # 6 Observaciones
+m_personas_con_colasterol_limite_superior <- filter( cardioData, totChol >= 130 & totChol <= 159 & sex == 'M')    # 67
+m_personas_con_colasterol_alto <- filter( cardioData, totChol >= 160 & totChol <= 189 & sex == 'M')    # 369 Observaciones
+m_personas_con_colasterol_muy_alto <- filter( cardioData, totChol >= 190 & sex == 'M')    # 2910
+
+
+f_personas_con_colasterol_aceptable <- filter( cardioData, totChol >= 100 & totChol <= 129 & sex == 'F' )    # 6 Observaciones
+f_personas_con_colasterol_limite_superior <- filter( cardioData, totChol >= 130 & totChol <= 159 & sex == 'F')    # 67
+f_personas_con_colasterol_alto <- filter( cardioData, totChol >= 160 & totChol <= 189 & sex == 'F')    # 369 Observaciones
+f_personas_con_colasterol_muy_alto <- filter( cardioData, totChol >= 190 & sex == 'F')    # 2910
 
 # Por rangos de edades en 10
 age_30_40  <- filter( cardioData, age > 29 & age < 41 ) # 604 Observaciones
@@ -74,12 +85,43 @@ smoking_age_50_60  <- filter( age_50_60, is_smoking == 'YES' ) # 497 Observacion
 smoking_age_60_70  <- filter( age_60_70, is_smoking == 'YES' ) # 175 Observaciones *
 smoking_age_70_80  <- filter( age_70_80, is_smoking == 'YES' ) # 0 Observaciones   *
 
+
+f_smoking_age_30_40  <- filter( age_30_40, is_smoking == 'YES' & sex == 'F' ) # 369 Observaciones
+f_smoking_age_40_50  <- filter( age_40_50, is_smoking == 'YES' & sex == 'F') # 834 Observaciones
+f_smoking_age_50_60  <- filter( age_50_60, is_smoking == 'YES' & sex == 'F') # 497 Observaciones *
+f_smoking_age_60_70  <- filter( age_60_70, is_smoking == 'YES' & sex == 'F') # 175 Observaciones *
+f_smoking_age_70_80  <- filter( age_70_80, is_smoking == 'YES' & sex == 'F' ) # 0 Observaciones   *
+
+
+h_smoking_age_30_40  <- filter( age_30_40, is_smoking == 'YES' & sex == 'M' ) # 369 Observaciones
+h_smoking_age_40_50  <- filter( age_40_50, is_smoking == 'YES' & sex == 'M') # 834 Observaciones
+h_smoking_age_50_60  <- filter( age_50_60, is_smoking == 'YES' & sex == 'M') # 497 Observaciones *
+h_smoking_age_60_70  <- filter( age_60_70, is_smoking == 'YES' & sex == 'M') # 175 Observaciones *
+H_smoking_age_70_80  <- filter( age_70_80, is_smoking == 'YES' & sex == 'M' ) # 0 Observaciones   *
+
+
 # Por rangos de edades en 10 y no fumadores
 no_smoking_age_30_40  <- filter( age_30_40, is_smoking == 'NO' ) # 235 Observaciones
 no_smoking_age_40_50  <- filter( age_40_50, is_smoking == 'NO' ) # 597 Observaciones
 no_smoking_age_50_60  <- filter( age_50_60, is_smoking == 'NO' ) # 659 Observaciones *
 no_smoking_age_60_70  <- filter( age_60_70, is_smoking == 'NO' ) # 382 Observaciones *
 no_smoking_age_70_80  <- filter( age_70_80, is_smoking == 'NO' ) # 2 Observaciones   *
+
+
+# Por rangos de edades en 10 y no fumadores
+h_no_smoking_age_30_40  <- filter( age_30_40, is_smoking == 'NO' & sex == 'M') # 235 Observaciones
+h_no_smoking_age_40_50  <- filter( age_40_50, is_smoking == 'NO' & sex == 'M' ) # 597 Observaciones
+h_no_smoking_age_50_60  <- filter( age_50_60, is_smoking == 'NO' & sex == 'M') # 659 Observaciones *
+h_no_smoking_age_60_70  <- filter( age_60_70, is_smoking == 'NO' & sex == 'M') # 382 Observaciones *
+h_no_smoking_age_70_80  <- filter( age_70_80, is_smoking == 'NO' & sex == 'M') # 2 Observaciones   *
+
+# Por rangos de edades en 10 y no fumadores
+f_no_smoking_age_30_40  <- filter( age_30_40, is_smoking == 'NO' & sex == 'F') # 235 Observaciones
+f_no_smoking_age_40_50  <- filter( age_40_50, is_smoking == 'NO' & sex == 'F') # 597 Observaciones
+f_no_smoking_age_50_60  <- filter( age_50_60, is_smoking == 'NO' & sex == 'F') # 659 Observaciones *
+f_no_smoking_age_60_70  <- filter( age_60_70, is_smoking == 'NO' & sex == 'F') # 382 Observaciones *
+f_no_smoking_age_70_80  <- filter( age_70_80, is_smoking == 'NO' & sex == 'F') # 2 Observaciones   *
+
 
 
 # Por rangos de edades en 10, fumadores y con diabetes
