@@ -1,7 +1,7 @@
 # Proyecto-equipo-10
 
 ## Presentación
-(https://www.canva.com/design/DAEU8xNX25k/n3hhFxyqZRb2wzvBgnuuMg/view?utm_content=DAEU8xNX25k&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton)
+[Link de la presentación](https://www.canva.com/design/DAEU8xNX25k/n3hhFxyqZRb2wzvBgnuuMg/view?utm_content=DAEU8xNX25k&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton)
 
 ## Códigos de R
 
