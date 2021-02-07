@@ -17,7 +17,8 @@
 
 [Base de prueba](https://github.com/angyf/Proyecto-equipo-10/blob/main/train.csv)
 
-####Bases limpias
+##Bases limpias
+
 [Base de entrenamiento limpia](https://github.com/angyf/Proyecto-equipo-10/blob/main/test_clean.csv)
 
 [Base de prueba limpia](https://github.com/angyf/Proyecto-equipo-10/blob/main/train_clean.csv)
