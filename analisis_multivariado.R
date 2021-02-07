@@ -250,7 +250,7 @@ paste("Observaciones de test mal clasificadas:",
 predicciones = predict(modelo, test)
 a<-as.data.frame(predicciones)
 a$predicciones<-as.numeric(as.character(a$predicciones))
-#obtenemos que 13 personas tienen riesgo de sufrir alguna enfermedad en un periodo de 10 años
+#obtenemos que 12 personas tienen riesgo de sufrir alguna enfermedad en un periodo de 10 años
 sum(a)
 test$TenYearCHD<-a$predicciones
 
