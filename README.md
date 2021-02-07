@@ -1,5 +1,8 @@
 # Proyecto-equipo-10
 
+## Presentación
+(https://www.canva.com/design/DAEU8xNX25k/n3hhFxyqZRb2wzvBgnuuMg/view?utm_content=DAEU8xNX25k&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton)
+
 ## Códigos de R
 
 [Análisis exploratorio y contraste de hipótesis](https://github.com/angyf/Proyecto-equipo-10/blob/main/Cargar%2C%20limpiar%20y%20analizar%20las%20bases.R)
