@@ -8,7 +8,7 @@
 
 [Link del dashboard](https://angelicafuentes.shinyapps.io/Dashboard_Equipo_10/)
 
-##Archivos CSV
+## Archivos CSV
 
 #### Bases originales
 [Base de entrenamiento](https://github.com/angyf/Proyecto-equipo-10/blob/main/test.csv)
