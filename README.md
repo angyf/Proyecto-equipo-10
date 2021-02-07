@@ -3,6 +3,8 @@
 ## Presentación
 [Link de la presentación](https://www.canva.com/design/DAEU8xNX25k/n3hhFxyqZRb2wzvBgnuuMg/view?utm_content=DAEU8xNX25k&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton)
 
+[Vídeo de la presentación](https://www.dropbox.com/sh/sol6sj33jszp9wr/AAA4GUvsbfICH-aPar3U7LA4a?dl=0&preview=zoom_1.mp4)
+
 ## Códigos de R
 
 [Análisis exploratorio y contraste de hipótesis](https://github.com/angyf/Proyecto-equipo-10/blob/main/Cargar%2C%20limpiar%20y%20analizar%20las%20bases.R)
