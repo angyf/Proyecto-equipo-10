@@ -114,7 +114,7 @@ sum(test$prediccion)
 mujeres<-filter(test,sex=="1",prediccion==1) #1 mujer
 #hombres con riesgo
 hombres<-filter(test,sex=="0",prediccion==1)#12 hombres
-write.csv()
+
 
 #escribimos los data frames creados para utilizarlos para la comparacion
 write.csv(mujeres,"MujeresRiesgoML.csv")
