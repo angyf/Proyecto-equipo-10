@@ -292,3 +292,4 @@ server <- function(input, output) {
 }
 
 shinyApp(ui, server)
+#https://angelicafuentes.shinyapps.io/Dashboard_Equipo_10/
