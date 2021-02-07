@@ -64,16 +64,13 @@ pseudoR2
 #de nuestros datos originales.
 detach(train)
 
-#Exponencial de los coeficientes, lo que se interpreta
-exp(coefficients(mod2))
-
 #Los intervalos de confianza
 confint(mod2)
 
 #prueba de modelo logistico----
 prediccion<-predict(mod2,train,type="response")
 train<-mutate(train,prediccion=predict(mod2,train,type="response"))
-
+#Asignamos una probabilidad para asignar uno o cero, donde uno es que la  persona presentara el riesgo y o en caso contrario
 for (i  in 1:length(train$sex)) {
   if (is.na(train$prediccion[i])) {train$prediccion[i]=NA}
   else{  if (train$prediccion[i]>=0.55) {train$prediccion[i]=1}
@@ -81,16 +78,16 @@ for (i  in 1:length(train$sex)) {
   }
 }
 
-#en cuantos acierta
+#en cuantos acierta sobre la base de prueba
 sum(na.omit(train$TenYearCHD==train$prediccion))
 
-# en cuantos 1 acierta
+# en cuantos 1 acierta sobre la base de prueba
 aciertos1<-filter(train,TenYearCHD==1,prediccion==1)
 dim(aciertos1)[1]
-#en cuantos ceros acierta
+#en cuantos ceros acierta sobre la base de prueba
 aciertos0<-filter(train,TenYearCHD==0,prediccion==0)
 dim(aciertos0)[1]
-#cuantos 1 fueron predichos con 0
+#cuantos 1 fueron predichos con 0 
 errores1<-filter(train,TenYearCHD==1,prediccion==0)
 dim(errores1)[1]
 #cuantos ceros fueron predichos con 1
@@ -99,12 +96,11 @@ dim(errores0)[1]
 #2901  datos  de 3390 fueron predichos correctamente ,es decir hubo un error del 14.42%
 
 #prediccion con modelo logistico ------
-
+#hacemos  la predicción sobre los datos de prueba
 prediccion<-predict(mod2,test,type="response")
-#sum(na.exclude(prediccion>1))
 test<-mutate(test,prediccion=predict(mod2,test,type="response"))
 
-#agregamos la predicción a los datos
+#agregamos la predicción al dataframe
 for (i  in 1:length(test$sex)) {
   if (is.na(test$prediccion[i])) {test$prediccion[i]=NA}
   else{  if (test$prediccion[i]>=0.5) {test$prediccion[i]=1}
@@ -137,8 +133,8 @@ datos.mv$TenYearCHD<-factor(datos.mv$TenYearCHD, levels = c("0", "1"))
 str(datos.mv)
 
 #separamos los datos para entrenamiento y prueba
-#ind<-sample(2,nrow(datos.mv),replace=TRUE,prob=c(0.7,.3))
-#3390*.75 =2542.5
+#donde se asignara el 5% de los datos para realizar el entrenamiento y fijamos
+#una semilla para poder replicar los resultados
 set.seed(2020)
 p = sample(nrow(datos.mv), 
            round(nrow(datos.mv)*.75))
@@ -152,13 +148,13 @@ prop.table(table(entrenamiento$TenYearCHD)) %>% round(digits = 2)
 #maquina 1------
 # Optimización de hiperparámetros mediante validación cruzada 10-fold
 #Obtendremos la mejor maquina, pero se comenta pues tarda al cargar
-
+#comentamos esto, pues toma algo de tiempo en encontrar la mejor 
+#maquina
 #tuning <- tune(svm, TenYearCHD ~ ., data = entrenamiento,
 #              kernel="radial")
 # Almacenamos el modelo optimo obtenido y accedemos a su información
 #modelo <- tuning$best.model
 #summary(modelo)
-
 
 #El mejor modelo obtenido sería equivalente a ajustar:
 modelo<- svm(TenYearCHD ~ ., data = entrenamiento, 
@@ -196,6 +192,8 @@ train <- read.csv("https://raw.githubusercontent.com/angyf/Proyecto-equipo-10/ma
 test<-read.csv("https://raw.githubusercontent.com/angyf/Proyecto-equipo-10/main/test_clean.csv")
 
 #seleccionamos los factores que incluiremos en el modelo
+#basandonos en los análisis previos y en el modelo logistico donde
+#esta variables resultadon relevantes
 datos.mv<-select(train,age,sex,cigsPerDay,prevalentStroke,totChol,sysBP,glucose,TenYearCHD)
 #convertimos a factor la variable dependiente
 datos.mv$TenYearCHD<-factor(datos.mv$TenYearCHD, levels = c("0", "1")) 
@@ -252,14 +250,15 @@ paste("Observaciones de test mal clasificadas:",
 predicciones = predict(modelo, test)
 a<-as.data.frame(predicciones)
 a$predicciones<-as.numeric(as.character(a$predicciones))
+#obtenemos que 13 personas tienen riesgo de sufrir alguna enfermedad en un periodo de 10 años
 sum(a)
 test$TenYearCHD<-a$predicciones
 
-
 #hombres y mujeres con riesgo  predicciones
-mujeres.riesgo<-filter(test,TenYearCHD==1,sex=="1")#1
-hombres.riesgo<-filter(test,TenYearCHD==1,sex=="0")#11
+mujeres.riesgo<-filter(test,TenYearCHD==1,sex=="1")#1 mujer con riesgo
+hombres.riesgo<-filter(test,TenYearCHD==1,sex=="0")#11 hombres con riesgo
 
+#guardamos los data frame con formato csv
 write.csv(mujeres.riesgo,"MujeresRiesgoMV.csv")
 write.csv(hombres.riesgo,"HombresriesgoMV.csv")
 
@@ -284,7 +283,7 @@ hombresml<-rename(hombresml,"ID"=id,"Edad"=age,"Cigarros_al_dia"=cigsPerDay,"Ata
 hombresmv<-rename(hombresmv,"ID"=id,"Edad"=age,"Cigarros_al_dia"=cigsPerDay,"Ataque_cardiaco_previo"=prevalentStroke,"Nivel_de_colesterol"=totChol,
                   "Presion_arterial_sistolica"=sysBP,"Nivel_glucosa"=glucose)
 
-
+#guardamos las bases limpias para presentarlas en el dashboard
 write.csv(mujeresml,"Mujeres_modelo_logistico.csv")
 write.csv(mujeresmv,"Mujeres_maquina_vectores.csv")
 write.csv(hombresml,"Hombres_modelo_logistico.csv")
