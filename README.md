@@ -10,7 +10,7 @@
 
 ## Archivos CSV
 
-#### Bases originales
+## Bases originales
 [Base de entrenamiento](https://github.com/angyf/Proyecto-equipo-10/blob/main/test.csv)
 [Base de prueba](https://github.com/angyf/Proyecto-equipo-10/blob/main/train.csv)
 
@@ -20,6 +20,9 @@
 
 #### Tablas de resultados en formato csv
 [Predicciones para hombres con modelo 1](https://github.com/angyf/Proyecto-equipo-10/blob/main/Hombres_modelo_logistico.csv)
+
 [Predicciones para hombres con modelo 2](https://github.com/angyf/Proyecto-equipo-10/blob/main/Hombres_maquina_vectores.csv)
+
 [Predicciones para mujeres con modelo 1](https://github.com/angyf/Proyecto-equipo-10/blob/main/Mujeres_modelo_logistico.csv)
+
 [Predicciones para mujeres con modelo 2](https://github.com/angyf/Proyecto-equipo-10/blob/main/Mujeres_maquina_vectores.csv)
