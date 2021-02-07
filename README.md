@@ -13,9 +13,9 @@
 ## Archivos CSV
 
 ## Bases originales
-[Base de entrenamiento](https://github.com/angyf/Proyecto-equipo-10/blob/main/test.csv)
+_[Base de entrenamiento](https://github.com/angyf/Proyecto-equipo-10/blob/main/test.csv)
 
-[Base de prueba](https://github.com/angyf/Proyecto-equipo-10/blob/main/train.csv)
+_[Base de prueba](https://github.com/angyf/Proyecto-equipo-10/blob/main/train.csv)
 
 ## Bases limpias
 
